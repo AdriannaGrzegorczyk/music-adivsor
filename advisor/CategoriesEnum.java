@@ -1,5 +1,6 @@
 package advisor;
 
-public enum CategoriesEnum {
+import java.util.List;
 
+public enum CategoriesEnum {
 }

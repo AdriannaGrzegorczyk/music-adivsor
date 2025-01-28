@@ -1,8 +1,11 @@
 package advisor;
 
 import java.util.Scanner;
+import java.util.function.BinaryOperator;
 
 public class SpotifyController {
+
+
 
     public SpotifyController() {
     }
@@ -14,8 +17,8 @@ public class SpotifyController {
         while (running) {
             String userInput = scanner.nextLine();
 
-            switch (userInput.split(" ")[0]) {
-                case "featured":
+            switch (userInput) {
+                case "featured" :
                     System.out.println("---FEATURED---\n" +
                             "Mellow Morning\n" +
                             "Wake Up and Smell the Coffee\n" +
@@ -36,9 +39,29 @@ public class SpotifyController {
                             "Mood\n" +
                             "Latin");
                     break;
-                    //TODO fix categories printing - printing  should depends on user input
-                case "playlists":
-                    System.out.println(" PLAYLISTS---\n" +
+                case "playlists Mood":
+                    System.out.println("---MOOD PLAYLISTS---\n" +
+                            "Walk Like A Badass  \n" +
+                            "Rage Beats  \n" +
+                            "Arab Mood Booster  \n" +
+                            "Sunday Stroll");
+                    break;
+                case "playlists Latin":
+                    System.out.println("---LATIN PLAYLISTS---\n" +
+                            "Walk Like A Badass  \n" +
+                            "Rage Beats  \n" +
+                            "Arab Mood Booster  \n" +
+                            "Sunday Stroll");
+                    break;
+                case "playlists Pop":
+                    System.out.println("---POP PLAYLISTS---\n" +
+                            "Walk Like A Badass  \n" +
+                            "Rage Beats  \n" +
+                            "Arab Mood Booster  \n" +
+                            "Sunday Stroll");
+                    break;
+                case "playlists Top Lists":
+                    System.out.println("---TOP LISTS PLAYLISTS---\n" +
                             "Walk Like A Badass  \n" +
                             "Rage Beats  \n" +
                             "Arab Mood Booster  \n" +
