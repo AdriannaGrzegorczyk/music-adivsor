@@ -1,15 +1,24 @@
 package advisor;
 
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Scanner;
 import java.util.function.BinaryOperator;
 
 public class SpotifyController {
 
+    SpotifyModel model;
+    String path;
 
-    public SpotifyController() {
+
+    public SpotifyController(String path) throws IOException, InterruptedException {
+        this.path = path;
+        this.model = new SpotifyModel(path);
     }
 
-    public void start() {
+    public void start() throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
         boolean isAuth = false;
@@ -70,8 +79,15 @@ public class SpotifyController {
                                 "Sunday Stroll");
                         break;
                     case "auth":
-                        System.out.println("https://accounts.spotify.com/authorize?client_id=e60acaa8b277447e8e1a382432bfd094&redirect_uri=localhost:8080&response_type=code");
-                        System.out.println("---SUCCESS---");
+                        System.out.println("use this link to request the access code:");
+                        model.startServer();
+                        System.out.println(path + "/authorize?client_id=e60acaa8b277447e8e1a382432bfd094&redirect_uri=http://localhost:8080&response_type=code");
+                        System.out.println("waiting for code...");
+                        while (model.code == null) {
+                            Thread.sleep(100);
+                        }
+                        model.server.stop(1);
+                        model.getToken();
                         isAuth = true;
                         break;
                     case "exit":
