@@ -41,8 +41,8 @@ public class SpotifyModel{
     }
 
     public SpotifyTokenResponse getToken() throws IOException, InterruptedException {
-        String clientSecret = "014a4983329d433a9115692556797be5";
-        String clientId = "e60acaa8b277447e8e1a382432bfd094";
+        String clientSecret = "CLIENT_SECRET";
+        String clientId = "CLIENT_ID";
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes()))
