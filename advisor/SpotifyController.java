@@ -12,6 +12,9 @@ public class SpotifyController {
     SpotifyModel model;
     String path;
 
+    SpotifyGetCategoriesResponse categoriesResponse;
+    SpotifyGetNewReleasesResponse newReleasesResponse;
+
 
     public SpotifyController(String path) throws IOException, InterruptedException {
         this.path = path;
@@ -37,18 +40,18 @@ public class SpotifyController {
                                 "Songs to Sing in the Shower");
                         break;
                     case "new":
-                        System.out.println("---NEW RELEASES---\n" +
-                                "Mountains [Sia, Diplo, Labrinth]\n" +
-                                "Runaway [Lil Peep]\n" +
-                                "The Greatest Show [Panic! At The Disco]\n" +
-                                "All Out Life [Slipknot]");
+                      newReleasesResponse = model.spotifyGetNewRelease();
+                      newReleasesResponse.albums().items().forEach(album -> {
+                          System.out.println(album.name());
+                          System.out.println(album.artists().stream().map(artist -> artist.name()).toList());
+                          System.out.println(album.external_urls().spotify());
+                          System.out.println();
+
+                      });
                         break;
                     case "categories":
-                        System.out.println("---CATEGORIES---\n" +
-                                "Top Lists\n" +
-                                "Pop\n" +
-                                "Mood\n" +
-                                "Latin");
+                       categoriesResponse = model.spotifyGetCategories();
+                       categoriesResponse.categories().items().forEach(category -> System.out.println(category.name()));
                         break;
                     case "playlists Mood":
                         System.out.println("---MOOD PLAYLISTS---\n" +

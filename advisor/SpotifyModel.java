@@ -21,6 +21,7 @@ public class SpotifyModel{
     SpotifyRequestHandler handler;
     HttpServer server;
 
+    SpotifyTokenResponse token;
     String code;
 
     public SpotifyModel(String path) throws IOException {
@@ -41,12 +42,13 @@ public class SpotifyModel{
     }
 
     public SpotifyTokenResponse getToken() throws IOException, InterruptedException {
+
         String clientSecret = "CLIENT_SECRET";
         String clientId = "CLIENT_ID";
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes()))
-                .uri(URI.create(path + "/api/token?grant_type=authorization_code&code=" + code))
+                .uri(URI.create(path + "/api/token?grant_type=authorization_code&code=" + code + "&redirect_uri=http://localhost:8080"))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpClient httpClient = HttpClient.newBuilder().build();
@@ -55,7 +57,38 @@ public class SpotifyModel{
         System.out.println("response:");
         System.out.println(response.body());
         System.out.println("---SUCCESS---");
-        return new Gson().fromJson((String) response.body(), SpotifyTokenResponse.class);
+        token = new Gson().fromJson((String) response.body(), SpotifyTokenResponse.class);
+        return token;
     }
+
+    public SpotifyGetCategoriesResponse spotifyGetCategories() throws IOException, InterruptedException {
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .header("Authorization","Bearer " + token.access_token())
+                .uri(URI.create( "https://api.spotify.com/v1/browse/categories"))
+                .GET()
+                .build();
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        HttpResponse<?> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
+        SpotifyGetCategoriesResponse responseCategories = new Gson().fromJson((String) response.body(),SpotifyGetCategoriesResponse.class);
+        return responseCategories;
+
+    }
+
+    public SpotifyGetNewReleasesResponse spotifyGetNewRelease () throws IOException, InterruptedException{
+        HttpRequest request = HttpRequest.newBuilder()
+                .header("Authorization","Bearer " + token.access_token())
+                .uri(URI.create( "https://api.spotify.com/v1/browse/new-releases"))
+                .GET()
+                .build();
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        HttpResponse<?> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
+        SpotifyGetNewReleasesResponse responseNewRelease = new Gson().fromJson((String) response.body(),SpotifyGetNewReleasesResponse.class);
+        return responseNewRelease;
+
+    }
+
 
 }
