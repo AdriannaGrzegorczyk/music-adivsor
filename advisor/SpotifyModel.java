@@ -43,8 +43,8 @@ public class SpotifyModel{
 
     public SpotifyTokenResponse getToken() throws IOException, InterruptedException {
 
-        String clientSecret = "CLIENT_SECRET";
-        String clientId = "CLIENT_ID";
+        String clientSecret = "XYZ";
+        String clientId = "XYZ";
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes()))
@@ -88,6 +88,20 @@ public class SpotifyModel{
         SpotifyGetNewReleasesResponse responseNewRelease = new Gson().fromJson((String) response.body(),SpotifyGetNewReleasesResponse.class);
         return responseNewRelease;
 
+    }
+
+
+    public SpotifyGetFeaturedResponse spotifyGetFeaturedResponse ()throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder()
+                .header("Authorization","Bearer " + token.access_token())
+                .uri(URI.create( "https://api.spotify.com/v1/browse/featured-playlists"))
+                .GET()
+                .build();
+        HttpClient httpClient = HttpClient.newBuilder().build();
+        HttpResponse<?> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        System.out.println(response.body());
+        SpotifyGetFeaturedResponse responseFeatured = new Gson().fromJson((String) response.body(),SpotifyGetFeaturedResponse.class);
+        return responseFeatured;
     }
 
 

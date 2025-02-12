@@ -15,6 +15,8 @@ public class SpotifyController {
     SpotifyGetCategoriesResponse categoriesResponse;
     SpotifyGetNewReleasesResponse newReleasesResponse;
 
+    SpotifyGetFeaturedResponse featuredResponse;
+
 
     public SpotifyController(String path) throws IOException, InterruptedException {
         this.path = path;
@@ -33,11 +35,9 @@ public class SpotifyController {
             } else {
                 switch (userInput) {
                     case "featured":
-                        System.out.println("---FEATURED---\n" +
-                                "Mellow Morning\n" +
-                                "Wake Up and Smell the Coffee\n" +
-                                "Monday Motivation\n" +
-                                "Songs to Sing in the Shower");
+                     featuredResponse = model.spotifyGetFeaturedResponse();
+                        System.out.println(featuredResponse.playlists());
+
                         break;
                     case "new":
                       newReleasesResponse = model.spotifyGetNewRelease();
