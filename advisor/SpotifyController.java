@@ -1,26 +1,26 @@
 package advisor;
 
-import com.sun.net.httpserver.HttpServer;
-
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.util.Optional;
 import java.util.Scanner;
-import java.util.function.BinaryOperator;
 
 public class SpotifyController {
 
     SpotifyModel model;
-    String path;
+    String tokenPath;
+    String resourcePath;
 
     SpotifyGetCategoriesResponse categoriesResponse;
     SpotifyGetNewReleasesResponse newReleasesResponse;
 
     SpotifyGetFeaturedResponse featuredResponse;
+    SpotifyGetCategoryPlaylistsResponse categoryPlaylistsResponse;
 
 
-    public SpotifyController(String path) throws IOException, InterruptedException {
-        this.path = path;
-        this.model = new SpotifyModel(path);
+    public SpotifyController(String tokenPath, String resourcePath) throws IOException, InterruptedException {
+        this.tokenPath = tokenPath;
+        this.resourcePath = resourcePath;
+        this.model = new SpotifyModel(tokenPath, resourcePath);
     }
 
     public void start() throws IOException, InterruptedException {
@@ -35,56 +35,30 @@ public class SpotifyController {
             } else {
                 switch (userInput) {
                     case "featured":
-                     featuredResponse = model.spotifyGetFeaturedResponse();
-                        System.out.println(featuredResponse.playlists());
+                        featuredResponse = model.spotifyGetFeaturedResponse();
+                        featuredResponse.playlists().items().forEach(playlist -> {
 
+                            System.out.println(playlist.name());
+                            System.out.println(playlist.external_urls().spotify());
+                        });
                         break;
                     case "new":
-                      newReleasesResponse = model.spotifyGetNewRelease();
-                      newReleasesResponse.albums().items().forEach(album -> {
-                          System.out.println(album.name());
-                          System.out.println(album.artists().stream().map(artist -> artist.name()).toList());
-                          System.out.println(album.external_urls().spotify());
-                          System.out.println();
-
-                      });
+                        newReleasesResponse = model.spotifyGetNewRelease();
+                        newReleasesResponse.albums().items().forEach(album -> {
+                            System.out.println(album.name());
+                            System.out.println(album.artists().stream().map(artist -> artist.name()).toList());
+                            System.out.println(album.external_urls().spotify());
+                            System.out.println();
+                        });
                         break;
                     case "categories":
-                       categoriesResponse = model.spotifyGetCategories();
-                       categoriesResponse.categories().items().forEach(category -> System.out.println(category.name()));
-                        break;
-                    case "playlists Mood":
-                        System.out.println("---MOOD PLAYLISTS---\n" +
-                                "Walk Like A Badass  \n" +
-                                "Rage Beats  \n" +
-                                "Arab Mood Booster  \n" +
-                                "Sunday Stroll");
-                        break;
-                    case "playlists Latin":
-                        System.out.println("---LATIN PLAYLISTS---\n" +
-                                "Walk Like A Badass  \n" +
-                                "Rage Beats  \n" +
-                                "Arab Mood Booster  \n" +
-                                "Sunday Stroll");
-                        break;
-                    case "playlists Pop":
-                        System.out.println("---POP PLAYLISTS---\n" +
-                                "Walk Like A Badass  \n" +
-                                "Rage Beats  \n" +
-                                "Arab Mood Booster  \n" +
-                                "Sunday Stroll");
-                        break;
-                    case "playlists Top Lists":
-                        System.out.println("---TOP LISTS PLAYLISTS---\n" +
-                                "Walk Like A Badass  \n" +
-                                "Rage Beats  \n" +
-                                "Arab Mood Booster  \n" +
-                                "Sunday Stroll");
+                        categoriesResponse = model.spotifyGetCategories();
+                        categoriesResponse.categories().items().forEach(category -> System.out.println(category.name()));
                         break;
                     case "auth":
                         System.out.println("use this link to request the access code:");
                         model.startServer();
-                        System.out.println(path + "/authorize?client_id=e60acaa8b277447e8e1a382432bfd094&redirect_uri=http://localhost:8080&response_type=code");
+                        System.out.println(tokenPath + "/authorize?client_id=e60acaa8b277447e8e1a382432bfd094&redirect_uri=http://localhost:8080&response_type=code");
                         System.out.println("waiting for code...");
                         while (model.code == null) {
                             Thread.sleep(100);
@@ -97,6 +71,26 @@ public class SpotifyController {
                         running = false;
                         System.out.println("---GOODBYE!---");
                         break;
+                }
+
+                //TODO FIX PRINTING
+                if (userInput.startsWith("playlists")) {
+                    String categoryName = userInput.substring(10);
+                    Optional<SpotifyGetCategoriesResponse.SpotifyGetCategoriesObject.Category> optional =
+                            categoriesResponse.categories().items()
+                                    .stream()
+                                    .filter(category -> category.name().equalsIgnoreCase(categoryName))
+                                    .findFirst();
+
+                    if (!optional.isPresent()) {
+                        System.out.println("Unknown category name.");
+                    } else {
+                        categoryPlaylistsResponse = model.spotifyGetCategoryPlaylistsResponse(optional.get().id());
+                        categoryPlaylistsResponse.playlist().items().forEach(item -> {
+                            System.out.println(item.name());
+                            System.out.println(item.external_urls());
+                        });
+                    }
                 }
             }
         }
