@@ -116,7 +116,7 @@ public class SpotifyModel{
                 .build();
         HttpClient httpClient = HttpClient.newBuilder().build();
         HttpResponse<?> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-      //  System.out.println(response.body());
+        System.out.println(response.body());
         SpotifyGetCategoryPlaylistsResponse responseFeatured = new Gson().fromJson((String) response.body(), SpotifyGetCategoryPlaylistsResponse.class);
         return responseFeatured;
     }

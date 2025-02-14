@@ -76,6 +76,9 @@ public class SpotifyController {
                 //TODO FIX PRINTING
                 if (userInput.startsWith("playlists")) {
                     String categoryName = userInput.substring(10);
+                    if (categoriesResponse == null) {
+                        categoriesResponse = model.spotifyGetCategories();
+                    }
                     Optional<SpotifyGetCategoriesResponse.SpotifyGetCategoriesObject.Category> optional =
                             categoriesResponse.categories().items()
                                     .stream()
@@ -86,15 +89,19 @@ public class SpotifyController {
                         System.out.println("Unknown category name.");
                     } else {
                         categoryPlaylistsResponse = model.spotifyGetCategoryPlaylistsResponse(optional.get().id());
-                        categoryPlaylistsResponse.playlist().items().forEach(item -> {
-                            System.out.println(item.name());
-                            System.out.println(item.external_urls());
-                        });
+                        if (categoryPlaylistsResponse.playlists() == null) {
+                            System.out.println("Specified id doesn't exist");
+                        } else {
+                            categoryPlaylistsResponse.playlists().items().forEach(item -> {
+                                System.out.println(item.name());
+                                System.out.println(item.external_urls().spotify());
+                                System.out.println();
+                            });
+                        }
                     }
                 }
             }
         }
+
     }
-
-
 }

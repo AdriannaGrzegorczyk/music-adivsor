@@ -2,7 +2,7 @@ package advisor;
 
 import java.util.List;
 
-public record SpotifyGetCategoryPlaylistsResponse(Playlist playlist) {
+public record SpotifyGetCategoryPlaylistsResponse(Playlist playlists) {
 
     public record Playlist (List<Item> items) {
 
