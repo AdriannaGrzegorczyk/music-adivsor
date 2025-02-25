@@ -13,8 +13,4 @@ public record SpotifyGetNewReleasesResponse(SpotifyGetNewReleaseObjectItems albu
             }
         }
     }
-
-
 }
-
-//nazwa albumu, artysta, link do alnumu
