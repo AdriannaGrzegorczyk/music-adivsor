@@ -69,7 +69,6 @@ public class ConsoleView {
             this.running=false;
             System.out.println("---GOODBYE!---");
         } else if (userInput.startsWith("playlists")){
-
             String categoryName = userInput.substring(10);
             if (model.getCategoriesResponse() == null) {
                 controller.spotifyGetCategories();
@@ -79,7 +78,6 @@ public class ConsoleView {
                             .stream()
                             .filter(category -> category.name().equalsIgnoreCase(categoryName))
                             .findFirst();
-
             if (!optional.isPresent()) {
                 System.out.println("Unknown category name.");
             } else {

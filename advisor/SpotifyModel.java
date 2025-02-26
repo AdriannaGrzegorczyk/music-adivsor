@@ -1,18 +1,27 @@
 package advisor;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 public class SpotifyModel {
+
+
     private String tokenPath;
     private String resourcePath;
     private SpotifyTokenResponse token;
     private String code;
-
     private SpotifyGetFeaturedResponse featuredResponse;
     private SpotifyGetCategoriesResponse categoriesResponse;
-
     private SpotifyGetCategoryPlaylistsResponse spotifyGetCategoryPlaylistsResponse;
-
     private SpotifyGetNewReleasesResponse newReleasesResponse;
     private SpotifyGetCategoryPlaylistsResponse categoryPlaylistsResponse;
+
+
+    public SpotifyModel(String tokenPath, String resourcePath) throws IOException {
+        this.tokenPath = tokenPath;
+        this.resourcePath = resourcePath;
+    }
+
 
     public SpotifyGetNewReleasesResponse getNewReleasesResponse() {
         return newReleasesResponse;
@@ -31,7 +40,6 @@ public class SpotifyModel {
     }
 
 
-
     public SpotifyGetCategoryPlaylistsResponse getSpotifyGetCategoryPlaylistsResponse() {
         return spotifyGetCategoryPlaylistsResponse;
     }
@@ -46,11 +54,6 @@ public class SpotifyModel {
 
     public void setFeaturedResponse(SpotifyGetFeaturedResponse featuredResponse) {
         this.featuredResponse = featuredResponse;
-    }
-
-    public SpotifyModel(String tokenPath, String resourcePath) throws IOException {
-        this.tokenPath = tokenPath;
-        this.resourcePath = resourcePath;
     }
 
     public void setCode(String code) {
@@ -86,6 +89,5 @@ public class SpotifyModel {
     public void setCategoriesResponse(SpotifyGetCategoriesResponse categoriesResponse) {
         this.categoriesResponse = categoriesResponse;
     }
-
 
 }
