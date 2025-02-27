@@ -43,13 +43,13 @@ public class SpotifyController {
 
     public void getToken() throws IOException, InterruptedException {
 
-        String clientSecret = "014a4983329d433a9115692556797be5";
-        String clientId = "e60acaa8b277447e8e1a382432bfd094";
+        String clientSecret = "abc";
+        String clientId = "abc";
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Authorization", "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes()))
-                .uri(URI.create(tokenPath + "/api/token?grant_type=authorization_code&code=" + model.getCode() + "&redirect_uri=http://localhost:8080"))
-                //.uri(URI.create(tokenPath + "/api/token?grant_type=authorization_code&code=" + model.getCode()))
+               //.uri(URI.create(tokenPath + "/api/token?grant_type=authorization_code&code=" + model.getCode() + "&redirect_uri=http://localhost:8080"))
+               .uri(URI.create(tokenPath + "/api/token?grant_type=authorization_code&code=" + model.getCode()))
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpClient httpClient = HttpClient.newBuilder().build();
@@ -75,6 +75,54 @@ public class SpotifyController {
         return responseFeatured;
     }
 
+    public void getFeaturedResponsePaginated () throws IOException, InterruptedException {
+        spotifyGetFeaturedResponse();
+        int currentPage = 1;
+        int totalNumberOfItems = model.getFeaturedResponse().playlists().items().size();
+        int totalPages = totalNumberOfItems % this.pageSize == 0 ? totalNumberOfItems / this.pageSize : (totalNumberOfItems) / this.pageSize + 1;
+        int toIndex = Math.min(currentPage * pageSize, totalNumberOfItems);
+
+        model.getFeaturedResponse().playlists().items().subList(0, toIndex).forEach(playlist -> {
+            System.out.println(playlist.name());
+            System.out.println(playlist.external_urls().spotify());
+        });
+
+        System.out.println("---PAGE " + currentPage + " OF " + totalPages + "---");
+
+        while (true) {
+            String input = new Scanner(System.in).nextLine();
+            if (input.equals("next")) {
+                if (currentPage == totalPages) {
+                    System.out.println("No more pages.");
+                } else {
+                    currentPage++;
+                    toIndex = Math.min(currentPage * pageSize, totalNumberOfItems);
+                    model.getFeaturedResponse().playlists().items()
+                            .subList((currentPage - 1) * this.pageSize, toIndex)
+                            .forEach(album -> {
+                                System.out.println(album.name());
+                                System.out.println(album.external_urls().spotify());
+                            });
+                    System.out.println("---PAGE " + currentPage + " OF " + totalPages + "---");
+                }
+            } else if (input.equals("prev")) {
+                if (currentPage == 1) {
+                    System.out.println("No more pages.");
+                } else {
+                    currentPage--;
+                    model.getFeaturedResponse().playlists().items()
+                            .subList((currentPage - 1) * this.pageSize, (currentPage) * this.pageSize)
+                            .forEach(album -> {
+                                System.out.println(album.name());
+                                System.out.println(album.external_urls().spotify());
+                            });
+                    System.out.println("---PAGE " + currentPage + " OF " + totalPages + "---");
+                }
+            } else {
+                break;
+            }
+        }
+    }
     public SpotifyGetCategoriesResponse spotifyGetCategories() throws IOException, InterruptedException {
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -139,18 +187,62 @@ public class SpotifyController {
     }
 
     public void getNewReleasePaginated () throws IOException, InterruptedException {
-//TODO ADD PAGINATION TO NEW_RELEASE
+
         spotifyGetNewRelease();
         int currentPage=1;
-        int totalNumberOfItems = model.getCategoriesResponse().categories().items().size();
+        int totalNumberOfItems = model.getNewReleasesResponse().albums().items().size();
         int totalPages = totalNumberOfItems % this.pageSize == 0 ? (totalNumberOfItems / this.pageSize) : ((totalNumberOfItems) / this.pageSize + 1);
         int toIndex = Math.min(currentPage * pageSize, totalNumberOfItems);
-        model.getNewReleasesResponse().albums().items().subList(0, toIndex).forEach(album -> System.out.println(album.name()));
 
+        model.getNewReleasesResponse().albums().items().subList(0, toIndex).forEach(album ->{
+        System.out.println(album.name());
+        System.out.println(album.artists().stream().map(artist -> artist.name()).toList());
+        System.out.println(album.external_urls().spotify());
+        System.out.println();
+        });
+        System.out.println("---PAGE " + currentPage + " OF " + totalPages +"---");
 
+        while (true) {
+            String input = new Scanner(System.in).nextLine();
+            if (input.equals("next")){
+                if(currentPage == totalPages){
+                    System.out.println("No more pages.");
+                } else {
+                    currentPage++;
+                    toIndex = Math.min(currentPage * pageSize, totalNumberOfItems);
+                    model.getNewReleasesResponse().albums().items()
+                            .subList((currentPage-1)*this.pageSize, toIndex)
+                            .forEach(album -> {
+                                System.out.println(album.name());
+                                System.out.println(album.artists().stream().map(artist -> artist.name()).toList());
+                                System.out.println(album.external_urls().spotify());
+                                System.out.println();
+                            });
+                    System.out.println("---PAGE " + currentPage + " OF " + totalPages +"---");
+                }
+            }else if (input.equals("prev")){
+                if (currentPage==1){
+                    System.out.println("No more pages.");
+                } else {
+                    currentPage--;
+                    model.getNewReleasesResponse().albums().items()
+                            .subList((currentPage-1)*this.pageSize, (currentPage)*this.pageSize)
+                            .forEach(album -> {
+                                System.out.println(album.name());
+                                System.out.println(album.artists().stream().map(artist -> artist.name()).toList());
+                                System.out.println(album.external_urls().spotify());
+                                System.out.println();
+                            });
+                    System.out.println("---PAGE " + currentPage + " OF " + totalPages +"---");
+                }
+            }else {
+                break;
+            }
+        }
     }
 
-    public SpotifyGetCategoryPlaylistsResponse spotifyGetCategoryPlaylistsResponse(String categoryId) throws IOException, InterruptedException {
+    public SpotifyGetCategoryPlaylistsResponse spotifyGetCategoryPlaylistsResponse (String categoryId) throws IOException, InterruptedException {
+
         HttpRequest request = HttpRequest.newBuilder()
                 .header("Authorization", "Bearer " + model.getToken().access_token())
                 .uri(URI.create(resourcePath + "/v1/browse/categories/" + categoryId + "/playlists"))
@@ -158,11 +250,68 @@ public class SpotifyController {
                 .build();
         HttpClient httpClient = HttpClient.newBuilder().build();
         HttpResponse<?> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(response.body());
         SpotifyGetCategoryPlaylistsResponse playlistsResponse = new Gson().fromJson((String) response.body(), SpotifyGetCategoryPlaylistsResponse.class);
-        model.setSpotifyGetCategoryPlaylistsResponse(playlistsResponse);
+        model.setCategoryPlaylistsResponse(playlistsResponse);
         return playlistsResponse;
     }
 
+    public void getCategoriesPlaylistsResponsePaginated (String categoryId) throws IOException, InterruptedException {
+
+        spotifyGetCategoryPlaylistsResponse(categoryId);
+
+        if (model.getCategoryPlaylistsResponse()== null || model.getCategoryPlaylistsResponse().playlists() == null) {
+            System.out.println("Specified id doesn't exist");
+            return;
+        }
+
+        int currentPage=1;
+        int totalNumberOfItems = model.getCategoryPlaylistsResponse().playlists().items().size();
+        int totalPages = totalNumberOfItems % this.pageSize == 0 ? (totalNumberOfItems / this.pageSize) : ((totalNumberOfItems) / this.pageSize + 1);
+        int toIndex = Math.min(currentPage * pageSize, totalNumberOfItems);
+
+        model.getCategoryPlaylistsResponse().playlists().items().subList(0,toIndex).forEach(item -> {
+            System.out.println(item.name());
+            System.out.println(item.external_urls().spotify());
+            System.out.println();
+        });
+
+        System.out.println("---PAGE " + currentPage + " OF " + totalPages +"---");
+        while (true) {
+            String input = new Scanner(System.in).nextLine();
+            if (input.equals("next")){
+                if(currentPage == totalPages){
+                    System.out.println("No more pages.");
+                } else {
+                    currentPage++;
+                    toIndex = Math.min(currentPage * pageSize, totalNumberOfItems);
+                    model.getCategoryPlaylistsResponse().playlists().items()
+                            .subList((currentPage-1)*this.pageSize, toIndex)
+                            .forEach(item -> {
+                        System.out.println(item.name());
+                        System.out.println(item.external_urls().spotify());
+                        System.out.println();
+                    });
+                    System.out.println("---PAGE " + currentPage + " OF " + totalPages +"---");
+                }
+            }else if (input.equals("prev")){
+                if (currentPage==1){
+                    System.out.println("No more pages.");
+                } else {
+                    currentPage--;
+                    model.getCategoryPlaylistsResponse().playlists().items()
+                            .subList((currentPage-1)*this.pageSize, (currentPage)*this.pageSize)
+                            .forEach(item -> {
+                                System.out.println(item.name());
+                                System.out.println(item.external_urls().spotify());
+                                System.out.println();
+                            });
+                    System.out.println("---PAGE " + currentPage + " OF " + totalPages +"---");
+                }
+            }else {
+                break;
+            }
+        }
+
+    }
 
 }

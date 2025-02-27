@@ -12,7 +12,6 @@ public class SpotifyModel {
     private String code;
     private SpotifyGetFeaturedResponse featuredResponse;
     private SpotifyGetCategoriesResponse categoriesResponse;
-    private SpotifyGetCategoryPlaylistsResponse spotifyGetCategoryPlaylistsResponse;
     private SpotifyGetNewReleasesResponse newReleasesResponse;
     private SpotifyGetCategoryPlaylistsResponse categoryPlaylistsResponse;
 
@@ -37,15 +36,6 @@ public class SpotifyModel {
 
     public void setCategoryPlaylistsResponse(SpotifyGetCategoryPlaylistsResponse categoryPlaylistsResponse) {
         this.categoryPlaylistsResponse = categoryPlaylistsResponse;
-    }
-
-
-    public SpotifyGetCategoryPlaylistsResponse getSpotifyGetCategoryPlaylistsResponse() {
-        return spotifyGetCategoryPlaylistsResponse;
-    }
-
-    public void setSpotifyGetCategoryPlaylistsResponse(SpotifyGetCategoryPlaylistsResponse spotifyGetCategoryPlaylistsResponse) {
-        this.spotifyGetCategoryPlaylistsResponse = spotifyGetCategoryPlaylistsResponse;
     }
 
     public SpotifyGetFeaturedResponse getFeaturedResponse() {
